@@ -9,7 +9,7 @@ the TCP/IP functionality in your application or device.
 
 Using axTLS with LWIP raw mode is not straight forward. "Lwirax" tries to ease the burden and provides the "glue" between the two.
 It is tested and working with [axTLS for ESP8266](https://github.com/igrr/axtls-8266) but should be easy to use in other
-platforms. Lwirax is proven to work with axTLS version 1.4.9 till 1.5.3+. It might work also for other versions.
+platforms. Lwirax is proven to work with axTLS version 1.4.9 till 2.0.0+. It might work also for other versions.
 
 For a fully working project and integration take a look at [Sming Tasty](https://github.com/slaff/Sming). 
 Take a look at [TcpConnection.cpp](https://github.com/slaff/Sming/blob/tasty/Sming/SmingCore/Network/TcpConnection.cpp) for a start.
