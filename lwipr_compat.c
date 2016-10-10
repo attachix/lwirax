@@ -14,9 +14,17 @@ AxlTcpDataArray axlFdArray;
 
 /**
  * Function that should be called once we are ready to use the axTLS - LWIP raw compatibility
+ * @param int capacity -  the desired capacity
+ * @return int - the actual capacity
+ * 		   - 0 - not enough memory
+ * 		   > 0 && capacity != actual capacity - the axl_init was already called and this is the current capacity
  */
-void axl_init(int capacity) {
-	ax_fd_init(&axlFdArray, capacity);
+int axl_init(int capacity) {
+	if(axlFdArray.capacity > 0 && axlFdArray.data != NULL) {
+		// we are already initialized.
+		return axlFdArray.capacity;
+	}
+	return ax_fd_init(&axlFdArray, capacity);
 }
 
 /**
@@ -42,7 +50,7 @@ int axl_free(struct tcp_pcb *tcp) {
 	for (i = 0; i < vector->size; i++) {
 		if (vector->data[i].tcp == tcp) {
 			if(vector->data[i].tcp_pbuf != NULL) {
-//				pbuf_free(vector->data[i].tcp_pbuf);
+				// Don't free tcp_pbuf here. It should be freed manually outside of this code.
 				vector->data[i].tcp_pbuf = NULL;
 			}
 			vector->data[i].tcp = NULL;
@@ -52,6 +60,19 @@ int axl_free(struct tcp_pcb *tcp) {
 	}
 
 	return occurances;
+}
+
+
+/**
+ * Frees completely the FD mapping.
+ */
+void axl_destroy()
+{
+	if(axlFdArray.data != NULL) {
+		free(axlFdArray.data);
+	}
+	axlFdArray.size = 0;
+	axlFdArray.capacity = 0;
 }
 
 /**
@@ -264,11 +285,20 @@ int ax_get_file(const char *filename, uint8_t **buf) {
 
 /*
  * Utility functions
+ *
+ * @param AxlTcpDataArray the tcp data vector
+ * @param int capacity - the desired capacity.
+ * @return int - the actual capacity
  */
-void ax_fd_init(AxlTcpDataArray *vector, int capacity) {
+int ax_fd_init(AxlTcpDataArray *vector, int capacity) {
 	vector->size = 0;
 	vector->capacity = capacity;
 	vector->data = (AxlTcpData*) malloc(sizeof(AxlTcpData) * vector->capacity);
+	if(vector->data == NULL) {
+		return 0;
+	}
+
+	return capacity;
 }
 
 int ax_fd_append(AxlTcpDataArray *vector, struct tcp_pcb *tcp) {

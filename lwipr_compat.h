@@ -54,9 +54,10 @@ typedef struct {
  * High Level Functions - these are the ones that should be used directly
  */
 
-void axl_init(int capacity);
+int axl_init(int capacity);
 int axl_append(struct tcp_pcb *tcp);
 int axl_free(struct tcp_pcb *tcp);
+void axl_destroy();
 
 #define axl_ssl_write(A, B, C) ssl_write(A, B, C)
 int axl_ssl_read(SSL *sslObj, struct tcp_pcb *tcp, struct pbuf *pin, struct pbuf **pout);
@@ -71,7 +72,7 @@ int ax_port_read(int clientfd, uint8_t *buf, int bytes_needed);
 /*
  * Lower Level Utility functions
  */
-void ax_fd_init(AxlTcpDataArray *vector, int capacity);
+int ax_fd_init(AxlTcpDataArray *vector, int capacity);
 int ax_fd_append(AxlTcpDataArray *vector, struct tcp_pcb *tcp);
 AxlTcpData* ax_fd_get(AxlTcpDataArray *vector, int index);
 int ax_fd_getfd(AxlTcpDataArray *vector, struct tcp_pcb *tcp);
